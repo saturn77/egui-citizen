@@ -40,6 +40,8 @@ The Dispatcher tracks which citizen is active and queues lifecycle messages. `ac
 
 ## Step 2: Wire on_tab_button in your TabViewer
 
+`TabViewer` is the bridge between `egui_dock` and your application. It's the trait you implement to tell egui_dock how to render each tab panel — what title to show, what content to draw, and how to respond when a tab header is clicked. This is where citizen activation happens.
+
 ```rust
 impl egui_dock::TabViewer for MyTabViewer<'_> {
     type Tab = Tab;
@@ -60,7 +62,7 @@ impl egui_dock::TabViewer for MyTabViewer<'_> {
 }
 ```
 
-This is the key — `on_tab_button` fires once on click, not every frame. That's what eliminates the race condition.
+`on_tab_button` is an egui_dock callback that fires once when a user clicks a tab header — not every frame like `ui()`. This is the critical distinction. By putting citizen activation here instead of inside `ui()`, state transitions happen exactly once per click, eliminating per-frame race conditions between visible panels.
 
 ## Step 3: Drain messages after rendering
 
@@ -120,6 +122,10 @@ impl Citizen for SettingsPanel {
 
 ## Step 5: Add a backend thread
 
+There are two approaches for backend coordination:
+
+### Option A: Crossbeam channels (simple, explicit)
+
 Route citizen messages to a background thread via a channel:
 
 ```rust
@@ -144,7 +150,32 @@ for msg in dispatcher.drain_messages() {
 }
 ```
 
-The UI stays responsive — all heavy work happens on the backend thread.
+This is what the `citizen_fetch` example uses. Direct, visible, no magic.
+
+### Option B: egui_mobius signals and slots (typed, reactive)
+
+For more structured backend communication, [egui_mobius](https://github.com/saturn77/egui_mobius) provides typed `Signal<T>` / `Slot<T>` pairs that handle thread-safe message passing with automatic wiring:
+
+```rust
+use egui_mobius::factory;
+use egui_mobius::signals::Signal;
+use egui_mobius::slot::Slot;
+
+// Create a typed signal/slot pair
+let (signal, mut slot) = factory::create_signal_slot::<MyRequest>();
+
+// Slot runs on a background thread
+slot.start(move |request: MyRequest| {
+    // handle request — runs off the UI thread
+});
+
+// Signal fires from the UI
+signal.emit(MyRequest::Fetch { url });
+```
+
+This is useful when you have multiple backend services (serial, modbus, network) that each need their own typed message channel. egui-citizen provides the panel lifecycle; egui_mobius provides the backend threading primitives. They compose naturally.
+
+The UI stays responsive with either approach — all heavy work happens off the UI thread.
 
 ## Working examples
 
