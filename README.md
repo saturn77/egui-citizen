@@ -110,7 +110,7 @@ One of the focus areas for using egui-citizen is internal tooling that span out 
 
 - **saturn-grid-sim** — A real time testing application, with communications and plotting. It is a IEEE 1547 grid support algorithm simulator with freq-watt, volt-watt, volt-var, and watt-var panels, live serial telemetry, and modbus TCP register access to embedded FPGA hardware.
 
-- **quarri** — Quartus FPGA toolchain launcher with dark theme injection and multi-installation management. A more basic type of application but one that has utility.
+- **[quarri](https://github.com/saturn77/quarri)** — Quartus FPGA toolchain launcher with dark theme injection and multi-installation management. A more basic type of application but one that has utility.
 
 ## Examples
 
