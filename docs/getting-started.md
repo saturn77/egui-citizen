@@ -1,10 +1,16 @@
 # Getting Started with egui-citizen
 
-## The problem
+## Why egui-citizen
 
-In `egui_dock`, every visible panel's `ui()` runs every frame. If two panels write to the same state, whichever renders last wins. This is a per-frame race condition — and it's why egui-citizen exists.
+Building a real egui application with dockable panels raises questions that egui and egui_dock don't answer on their own:
 
-The fix: move state transitions from `ui()` to `on_tab_button()`, which fires once, on click, only for the clicked panel.
+- How do you track which panel is active when multiple panels are visible?
+- How do panels coordinate with backend threads (serial, network, compute)?
+- How do you structure the app so adding panels doesn't turn into spaghetti?
+
+egui-citizen provides the architectural layer for this. Each panel gets a persistent identity, lifecycle state, and participates in message dispatch through a central Dispatcher. The result is a consistent structure that scales from 3 panels to 12+ without the codebase degrading.
+
+The pattern originated from a per-frame race condition in saturn-grid-sim — undocked panels fighting over shared state every frame — but the solution turned out to be a general architecture for any docked egui application with backend coordination needs.
 
 ## Add to your project
 
