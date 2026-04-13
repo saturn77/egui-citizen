@@ -2,6 +2,7 @@
 members = [
     "crates/egui_citizen",
     "examples/citizen_dock",
+    "examples/citizen_fetch",
 ]
 
 resolver = "2"
