@@ -126,6 +126,10 @@ cargo run -p citizen_dock
 cargo run -p citizen_fetch
 ```
 
+## Getting Started
+
+See [docs/getting-started.md](docs/getting-started.md) for a step-by-step guide.
+
 ## Dependencies
 
 | Crate | Purpose |
