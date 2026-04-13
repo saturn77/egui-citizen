@@ -112,12 +112,18 @@ One of the focus areas for using egui-citizen is internal tooling that span out 
 
 - **quarri** — Quartus FPGA toolchain launcher with dark theme injection and multi-installation management. A more basic type of application but one that has utility.
 
-## Example
+## Examples
 
-The `citizen_dock` example demonstrates the basic pattern: three algorithm tabs, a reactive plot panel, and a message logger.
+**citizen_dock** — basic pattern: three algorithm tabs, a reactive plot panel, and a message logger.
 
 ```bash
-cargo run --example citizen_dock
+cargo run -p citizen_dock
+```
+
+**citizen_fetch** — backend threading: HTTP fetch on a background thread, auto-refresh with random images from picsum.photos, four dockable panels showing the full citizen → backend → UI response cycle.
+
+```bash
+cargo run -p citizen_fetch
 ```
 
 ## Dependencies
