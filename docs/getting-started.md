@@ -120,6 +120,30 @@ impl Citizen for SettingsPanel {
 
 `CitizenState` fields are reactive (`Dynamic<T>`) — other panels can read them without polling.
 
+## Why Dynamic\<T\> matters
+
+Every field in `CitizenState` is a `Dynamic<T>` from [egui_mobius_reactive](https://github.com/saturn77/egui_mobius). This is the critical link between egui-citizen and egui-mobius.
+
+When the Dispatcher calls `state.active.set(true)`, any panel holding a clone of that `CitizenState` sees the change immediately via `.get()` — no polling, no message checking, no frame delay. The state is shared through the `Dynamic<T>` reactive primitive, not copied.
+
+```rust
+// Dispatcher sets alpha as active
+dispatcher.activate(&CitizenId::new("alpha"));
+// alpha_state.active is now true
+
+// Meanwhile, in the plot panel (holding a clone of alpha's CitizenState):
+if alpha_state.active.get() {
+    // this is true immediately — no message needed
+    render_alpha_curve();
+}
+```
+
+This is what makes the two consumer paths possible:
+- **Path 1 (panel-to-panel):** Panels read `CitizenState` via `Dynamic<T>` — reactive, immediate, zero wiring.
+- **Path 2 (panel-to-backend):** Backend threads receive `CitizenMessage` via `drain_messages()` — explicit, routed through channels.
+
+Without `Dynamic<T>`, panels would have to check the message queue every frame to know if another panel's state changed. With it, they just read a value.
+
 ## Step 5: Add a backend thread
 
 There are two approaches for backend coordination:

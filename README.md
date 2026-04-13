@@ -59,15 +59,15 @@ for msg in dispatcher.drain_messages() {
 
 ## Two consumer paths
 
-Citizens emit messages. There are two consumers:
+Every field in `CitizenState` is a `Dynamic<T>` from [egui_mobius_reactive](https://github.com/saturn77/egui_mobius). When the Dispatcher calls `state.active.set(true)`, any panel holding a clone of that state sees the change immediately via `.get()` — no polling, no message checking, no frame delay. This is what makes two consumer paths possible:
 
-1. **Other panels** — a plot panel reads another citizen's `CitizenState` directly via reactive `Dynamic<T>`. No polling, no shared mutable state.
+1. **Other panels** — read `CitizenState` directly via `Dynamic<T>`. Reactive, immediate, zero wiring.
 
-2. **Backend threads** — a service thread receives `CitizenMessage` via `drain_messages()` and spawns computation, opens a serial port, or writes a modbus register.
+2. **Backend threads** — receive `CitizenMessage` via `drain_messages()` and route through channels to serial ports, network connections, or compute tasks.
 
 ```
 Tab click → dispatcher.activate("alpha")
-  ├─ Path 1: alpha.state.active = true   (reactive, immediate)
+  ├─ Path 1: alpha.state.active = true   (reactive, immediate via Dynamic<T>)
   │           beta.state.active = false
   └─ Path 2: queue ← [Activated{alpha}, Deactivated{beta}]
              drain_messages() → route to backends
