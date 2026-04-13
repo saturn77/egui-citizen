@@ -2,7 +2,7 @@
 
 # egui-citizen
 
-Panel lifecycle and message dispatch for dockable egui applications.
+Structuring egui applications with dockable panels as first class Citizens. 
 
 [![egui](https://img.shields.io/badge/egui-0.33-blue)](https://github.com/emilk/egui)
 [![egui_dock](https://img.shields.io/badge/egui__dock-0.18-purple)](https://github.com/Adanos020/egui_dock)
@@ -11,9 +11,15 @@ Panel lifecycle and message dispatch for dockable egui applications.
 
 </div>
 
-## The problem
+## Introduction
 
-In `egui_dock`, when multiple panels are visible across dock nodes, there is no built-in way to track which panel the user last interacted with. Panels fight over shared state every frame — whichever renders last wins. This is a per-frame race condition that gets worse as you add panels.
+Overall how does one structure an egui application that is flexible and easy to maintain with dockable panels? This is an essential question that really rquires consideration of the whole entire gui application. 
+
+**egui_mobius** attempted to setup a framework for messaging
+and reactive updates, borrowing some ideas that have been
+long established such as signals, slots, threads, and dispatching. 
+
+This platform is really an evolution of egui_mobius. It focuses on structuring an app planning from the very beginning of the application anticipating backend processing needs and the entire architectural flow chain required to accomplish that. 
 
 ## What egui-citizen does
 
@@ -98,24 +104,20 @@ and message dispatch.
 
 ## Applications built with egui-citizen
 
+One of the focus areas for using egui-citizen is internal tooling that span out into medium sized applications that are not necessarily full enterprise apps. The egui-citizen architecture is proving itself with multiple internal tools that have been built and provides a consistent design pattern for rapidly building out such apps. 
+
 - **[CopperForge](https://github.com/Atlantix-EDA/CopperForge)** — KiCad companion tool for project management, gerber viewing, and fabrication output. 12 citizen panels, LayerStore-based rendering, Tokyo Night Storm theme.
 
-- **saturn-grid-sim** — IEEE 1547 grid support algorithm simulator with freq-watt, volt-watt, volt-var, and watt-var panels, live serial telemetry, and modbus TCP register access to embedded FPGA hardware.
+- **saturn-grid-sim** — A real time testing application, with communications and plotting. It is a IEEE 1547 grid support algorithm simulator with freq-watt, volt-watt, volt-var, and watt-var panels, live serial telemetry, and modbus TCP register access to embedded FPGA hardware.
 
-- **quarri** — Quartus FPGA toolchain launcher with dark theme injection and multi-installation management.
+- **quarri** — Quartus FPGA toolchain launcher with dark theme injection and multi-installation management. A more basic type of application but one that has utility.
 
-## Examples
+## Example
 
-**citizen_dock** — basic pattern: three algorithm tabs, a reactive plot panel, and a message logger.
-
-```bash
-cargo run -p citizen_dock
-```
-
-**citizen_fetch** — backend threading: HTTP fetch on a background thread, auto-refresh with random images from picsum.photos, four dockable panels showing the full citizen → backend → UI response cycle.
+The `citizen_dock` example demonstrates the basic pattern: three algorithm tabs, a reactive plot panel, and a message logger.
 
 ```bash
-cargo run -p citizen_fetch
+cargo run --example citizen_dock
 ```
 
 ## Dependencies
