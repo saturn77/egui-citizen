@@ -10,7 +10,7 @@ Building a real egui application with dockable panels raises questions that egui
 
 egui-citizen provides the architectural layer for this. Each panel gets a persistent identity, lifecycle state, and participates in message dispatch through a central Dispatcher. The result is a consistent structure that scales from 3 panels to 12+ without the codebase degrading.
 
-The pattern originated from a per-frame race condition in saturn-grid-sim — undocked panels fighting over shared state every frame — but the solution turned out to be a general architecture for any docked egui application with backend coordination needs.
+The pattern emerged from building [quarri](https://github.com/saturn77/quarri), a Quartus FPGA toolchain launcher. The clean delegation in quarri's `main.rs` — where each panel is a self-contained unit and the TabViewer just routes to them — proved that structuring panels as first-class entities made the whole app maintainable. That architecture became egui-citizen.
 
 ## Add to your project
 
