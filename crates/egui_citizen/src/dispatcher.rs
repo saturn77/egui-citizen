@@ -12,8 +12,8 @@ use crate::state::CitizenState;
 ///
 /// # Activation
 ///
-/// [`activate()`](Dispatcher::activate) is the core operation — a set/reset
-/// flip-flop. When you activate citizen "alpha":
+/// [`activate()`](Dispatcher::activate) is the core operation — an encoded
+/// set/reset. When you activate citizen "alpha":
 /// - `alpha.active` is set to `true`
 /// - All other active citizens are set to `false`
 /// - `Activated { id: "alpha" }` and `Deactivated { id: "beta" }` messages
@@ -90,7 +90,7 @@ impl Dispatcher {
 
     /// Activate a citizen by ID, deactivating all others.
     ///
-    /// This is a set/reset flip-flop — exactly one citizen is active at a
+    /// This is an encoded set/reset — exactly one citizen is active at a
     /// time. Both `Activated` and `Deactivated` messages are emitted for
     /// downstream consumers.
     pub fn activate(&mut self, id: &CitizenId) {

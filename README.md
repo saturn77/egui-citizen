@@ -34,7 +34,7 @@ dispatcher.register(CitizenId::new("plot"));
 
 // In TabViewer::on_tab_button — fires once on click
 if response.clicked() {
-    dispatcher.activate(&id);  // flip-flop: one active, rest off
+    dispatcher.activate(&id);  // one-hot: one active, rest off
 }
 
 // After DockArea::show — process messages
@@ -54,7 +54,7 @@ for msg in dispatcher.drain_messages() {
 | `Citizen` | Trait each dock panel implements. Identity + lifecycle hooks. |
 | `CitizenState` | Per-panel reactive state: active, clicked, selected, moved, visible. |
 | `CitizenMessage` | Lifecycle events dispatched through the message queue. |
-| `Dispatcher` | Manages citizens. `activate()` is a flip-flop. `drain_messages()` for Elm-style dispatch. |
+| `Dispatcher` | Manages citizens. `activate()` is an encoded set/reset. `drain_messages()` for Elm-style dispatch. |
 | `CitizenId` | String identifier. Panels are addressed by name. |
 
 ## Two consumer paths
@@ -99,7 +99,7 @@ Tab click → dispatcher.activate("alpha")
 
 The citizen pattern was extracted from production engineering tools where
 undocked algo panels raced to set shared state — the last panel rendered
-each frame won. The fix: persistent panel identity with flip-flop activation
+each frame won. The fix: persistent panel identity with one-hot activation
 and message dispatch.
 
 ## Applications built with egui-citizen

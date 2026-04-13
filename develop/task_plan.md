@@ -35,7 +35,7 @@
 - [ ] Integration with threaded backends (serial, modbus, network)
 
 ## Future
-- [ ] Citizen group support (multiple independent flip-flop groups)
+- [ ] Citizen group support (multiple independent one-hot groups)
 - [ ] Derive macro for Citizen trait boilerplate
 - [ ] Persistence — save/restore citizen state and dock layout across sessions
 - [ ] Template repo for cargo-generate

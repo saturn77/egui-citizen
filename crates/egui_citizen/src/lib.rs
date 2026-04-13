@@ -25,7 +25,7 @@
 //! let alpha_state = dispatcher.register(CitizenId::new("alpha"));
 //! let beta_state = dispatcher.register(CitizenId::new("beta"));
 //!
-//! // 2. Activate a citizen (flip-flop: one active, rest off)
+//! // 2. Activate a citizen (one-hot: one active, rest off)
 //! dispatcher.activate(&CitizenId::new("alpha"));
 //!
 //! // 3. Drain messages after rendering
@@ -139,7 +139,7 @@
 //!
 //! ## Design principles
 //!
-//! - **`activate()` is a flip-flop.** Exactly one citizen is active at a time.
+//! - **`activate()` is an encoded set/reset.** Exactly one citizen is active at a time.
 //!   Activating one deactivates all others atomically.
 //! - **No shared mutable state.** Panels read reactive `Dynamic<T>` fields.
 //!   Backend threads receive immutable messages.

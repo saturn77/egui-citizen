@@ -59,7 +59,7 @@ registry.register(CitizenId::new("volt_var"));
 fn on_tab_button(&mut self, tab: &mut Tab, response: &egui::Response) {
     if response.clicked() {
         if let Some(id) = tab.citizen_id() {
-            self.registry.activate(&id);  // flip-flop: one active, rest deactivated
+            self.registry.activate(&id);  // one-hot: one active, rest deactivated
         }
     }
 }
@@ -80,8 +80,8 @@ for msg in registry.drain_messages() {
   they don't need their own lifecycle tracking.
 - **Messages have two consumer types:** other citizens (peer-to-peer) or the
   backend dispatcher (service layer).
-- **`activate()` is a flip-flop.** Exactly one citizen in the registry is active
-  at a time. Activating one deactivates all others — like a set/reset flip-flop.
+- **`activate()` is an encoded set/reset.** Exactly one citizen in the registry is active
+  at a time. Activating one deactivates all others — like an encoded set/reset.
 - **Two things make rugged apps:** dockable widgets and threading. Citizen provides
   the lifecycle layer that bridges these two fundamentals.
 

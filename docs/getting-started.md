@@ -36,7 +36,7 @@ dispatcher.activate(&CitizenId::new("plot"));
 let _ = dispatcher.drain_messages(); // clear startup messages
 ```
 
-The Dispatcher tracks which citizen is active and queues lifecycle messages. `activate()` is a flip-flop — one active, rest off.
+The Dispatcher tracks which citizen is active and queues lifecycle messages. `activate()` is an encoded set/reset — one active, rest off.
 
 ## Step 2: Wire on_tab_button in your TabViewer
 
@@ -203,7 +203,13 @@ egui-citizen manages **panel lifecycle** — which panel is active, which got de
 
 ## Complete example
 
-The full getting started code as a single compilable file. Run it with `cargo run -p getting_started`.
+The full getting started code as a single compilable file. Run it with 
+
+```bash
+cargo run -p getting_started
+```
+
+The full file is : 
 
 ```rust
 use eframe::egui;

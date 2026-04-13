@@ -88,7 +88,7 @@ impl egui_dock::TabViewer for TabViewer<'_> {
                 self.dispatcher.activate(&id);
                 self.active_algo.set(id.0.clone());
 
-                // Drain messages into the log so we can see the flip-flop
+                // Drain messages into the log so we can see the one-hot activation
                 for msg in self.dispatcher.drain_messages() {
                     match &msg {
                         CitizenMessage::Activated { id } => {

@@ -19,10 +19,10 @@
 /// ```
 #[derive(Debug, Clone)]
 pub enum CitizenMessage {
-    /// Citizen became the active one (flip-flop set).
+    /// Citizen became the active one (set).
     Activated { id: CitizenId },
 
-    /// Citizen was deactivated (flip-flop reset).
+    /// Citizen was deactivated (reset).
     Deactivated { id: CitizenId },
 
     /// Citizen was clicked this frame.
