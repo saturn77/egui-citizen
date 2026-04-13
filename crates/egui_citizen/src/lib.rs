@@ -1,36 +1,152 @@
 //! # egui_citizen
 //!
-//! First-class dock panel lifecycle and state tracking for egui.
+//! Panel lifecycle and message dispatch for dockable egui applications.
 //!
-//! In egui's immediate mode, dock panels have no persistent identity — they
-//! exist only during the frame they are drawn. When multiple panels are visible
-//! simultaneously (e.g., undocked into separate nodes), there is no built-in way
-//! to know which one the user last interacted with.
+//! ## The problem
 //!
-//! `Citizen` solves this by giving each dock panel a persistent identity and
-//! lifecycle state (active, clicked, selected, moved, location) that survives
-//! across frames, with state changes dispatched as messages.
+//! In `egui_dock`, when multiple panels are visible across dock nodes, there is
+//! no built-in way to track which panel the user last interacted with. Every
+//! visible panel's `ui()` runs every frame — if two panels write to the same
+//! state, whichever renders last wins. This is a per-frame race condition.
 //!
-//! While the `Citizen` trait can be applied to any widget, it is most useful
-//! when applied to **dock panels** — these are the natural unit of identity
-//! in an `egui_dock` layout. A panel is the "citizen"; widgets inside it are
-//! its implementation details.
+//! ## The solution
 //!
-//! ## Core Concepts
+//! Give each dock panel a persistent identity ([`CitizenId`]), lifecycle state
+//! ([`CitizenState`]), and route state transitions through a central
+//! [`Dispatcher`]. State changes happen exactly once, on click — not every frame.
 //!
-//! - **`Citizen` trait**: A dock panel implements this to declare its identity
-//!   and respond to lifecycle events.
-//! - **`CitizenState`**: Per-panel lifecycle state (active, clicked, selected,
-//!   moved, location, visible) using reactive `Dynamic<T>`. Panels read this directly.
-//! - **`CitizenMessage`**: Lifecycle events (Activated, Deactivated, Clicked, etc.)
-//!   routed to backend threads as signals.
-//! - **`Dispatcher`**: The hub. Panels read shared state from it. Backend threads
-//!   receive signals and post responses back. `activate()` is the flip-flop.
+//! ## Quick start
+//!
+//! ```rust,no_run
+//! use egui_citizen::{Citizen, CitizenId, CitizenState, CitizenMessage, Dispatcher};
+//!
+//! // 1. Create a dispatcher and register panels
+//! let mut dispatcher = Dispatcher::new();
+//! let alpha_state = dispatcher.register(CitizenId::new("alpha"));
+//! let beta_state = dispatcher.register(CitizenId::new("beta"));
+//!
+//! // 2. Activate a citizen (flip-flop: one active, rest off)
+//! dispatcher.activate(&CitizenId::new("alpha"));
+//!
+//! // 3. Drain messages after rendering
+//! for msg in dispatcher.drain_messages() {
+//!     match msg {
+//!         CitizenMessage::Activated { id } => println!("{} activated", id),
+//!         CitizenMessage::Deactivated { id } => println!("{} deactivated", id),
+//!         _ => {}
+//!     }
+//! }
+//! ```
 //!
 //! ## Two consumer paths
 //!
-//! - **Panels** read `CitizenState` directly (shared, reactive, no wiring).
-//! - **Threads** receive `CitizenMessage` via `drain_messages()` (signals/slots).
+//! State transitions produce both reactive state changes and messages:
+//!
+//! - **Panels** read [`CitizenState`] directly via `Dynamic<T>` — reactive,
+//!   immediate, no polling. A plot panel can observe `alpha.active.get()` and
+//!   switch its display without any wiring.
+//!
+//! - **Backend threads** receive [`CitizenMessage`] via
+//!   [`Dispatcher::drain_messages()`] and route them over channels to serial
+//!   ports, network connections, or compute tasks.
+//!
+//! ## With egui_dock
+//!
+//! Wire citizen activation into `TabViewer::on_tab_button()`:
+//!
+//! ```rust,ignore
+//! impl egui_dock::TabViewer for MyTabViewer<'_> {
+//!     type Tab = MyTab;
+//!
+//!     fn on_tab_button(&mut self, tab: &mut MyTab, response: &egui::Response) {
+//!         if response.clicked() {
+//!             self.dispatcher.activate(&tab.citizen_id());
+//!         }
+//!     }
+//!
+//!     fn ui(&mut self, ui: &mut egui::Ui, tab: &mut MyTab) {
+//!         tab.show(ui);
+//!     }
+//! }
+//!
+//! // After DockArea::show(), drain messages:
+//! for msg in dispatcher.drain_messages() {
+//!     match msg {
+//!         CitizenMessage::Activated { id } => { /* update state, notify backend */ }
+//!         CitizenMessage::Deactivated { id } => { /* cleanup */ }
+//!         _ => {}
+//!     }
+//! }
+//! ```
+//!
+//! ## Implementing the Citizen trait
+//!
+//! Each panel struct holds its own `CitizenId` and `CitizenState`:
+//!
+//! ```rust,ignore
+//! use egui_citizen::{Citizen, CitizenId, CitizenState};
+//!
+//! struct SettingsPanel {
+//!     citizen_id: CitizenId,
+//!     citizen_state: CitizenState,
+//!     // panel-specific fields...
+//! }
+//!
+//! impl SettingsPanel {
+//!     fn new(citizen_state: CitizenState) -> Self {
+//!         Self {
+//!             citizen_id: CitizenId::new("settings"),
+//!             citizen_state,
+//!         }
+//!     }
+//! }
+//!
+//! impl Citizen for SettingsPanel {
+//!     fn id(&self) -> &CitizenId { &self.citizen_id }
+//!     fn state(&self) -> &CitizenState { &self.citizen_state }
+//!     fn state_mut(&mut self) -> &mut CitizenState { &mut self.citizen_state }
+//! }
+//! ```
+//!
+//! ## Threading example
+//!
+//! Route citizen messages to a backend thread via a channel:
+//!
+//! ```rust,ignore
+//! use crossbeam_channel::{unbounded, Sender};
+//!
+//! // At startup: spawn backend thread
+//! let (tx, rx) = unbounded::<CitizenMessage>();
+//! std::thread::spawn(move || {
+//!     for msg in rx {
+//!         match msg {
+//!             CitizenMessage::Activated { id } if id.0 == "fetch" => {
+//!                 // start an HTTP request, computation, serial read, etc.
+//!             }
+//!             CitizenMessage::Deactivated { id } if id.0 == "fetch" => {
+//!                 // cancel or clean up
+//!             }
+//!             _ => {}
+//!         }
+//!     }
+//! });
+//!
+//! // In the update loop, after drain_messages():
+//! for msg in dispatcher.drain_messages() {
+//!     let _ = tx.send(msg.clone()); // forward to backend
+//! }
+//! ```
+//!
+//! ## Design principles
+//!
+//! - **`activate()` is a flip-flop.** Exactly one citizen is active at a time.
+//!   Activating one deactivates all others atomically.
+//! - **No shared mutable state.** Panels read reactive `Dynamic<T>` fields.
+//!   Backend threads receive immutable messages.
+//! - **Frame-order independent.** Because messages are queued and drained once
+//!   per frame, the order panels render in doesn't matter.
+//! - **No dependency on `egui_dock`.** The core crate provides the trait and
+//!   dispatcher — you wire it into whatever dock layout you use.
 
 mod citizen;
 pub mod dispatcher;

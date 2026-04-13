@@ -1,34 +1,53 @@
-//! Messages emitted by citizens when their lifecycle state changes.
+//! Lifecycle messages emitted by the dispatcher.
+//!
+//! These messages flow through [`Dispatcher::drain_messages()`](crate::Dispatcher::drain_messages)
+//! and are consumed by either other panels (for reactive UI updates) or
+//! backend threads (for I/O, computation, etc.).
 
-/// A lifecycle event emitted by a citizen.
+/// A lifecycle event emitted when citizen state changes.
 ///
-/// These are dispatched to the `CitizenRegistry` which routes them
-/// to handlers — Elm-style update loop.
+/// Route these in your update loop after `DockArea::show()`:
+///
+/// ```rust,ignore
+/// for msg in dispatcher.drain_messages() {
+///     match msg {
+///         CitizenMessage::Activated { id } => { /* panel became active */ }
+///         CitizenMessage::Deactivated { id } => { /* panel lost focus */ }
+///         _ => {}
+///     }
+/// }
+/// ```
 #[derive(Debug, Clone)]
 pub enum CitizenMessage {
-    /// Citizen became the active member of its group.
+    /// Citizen became the active one (flip-flop set).
     Activated { id: CitizenId },
 
-    /// Citizen was deactivated (another in the group became active).
+    /// Citizen was deactivated (flip-flop reset).
     Deactivated { id: CitizenId },
 
     /// Citizen was clicked this frame.
     Clicked { id: CitizenId },
 
-    /// Citizen selection toggled.
+    /// Citizen selection was toggled.
     Selected { id: CitizenId, selected: bool },
 
-    /// Citizen was moved to a new location.
+    /// Citizen was moved to a new dock location.
     Moved { id: CitizenId, location: [f32; 2] },
 
-    /// Citizen visibility changed.
+    /// Citizen visibility changed (shown or hidden).
     VisibilityChanged { id: CitizenId, visible: bool },
 }
 
-/// Unique identifier for a citizen.
+/// Unique string identifier for a citizen panel.
 ///
-/// Wraps a string ID so citizens can be addressed by name
-/// (e.g., "freq_watt", "plot", "volt_var").
+/// Panels are addressed by name — e.g., `"settings"`, `"gerber_view"`, `"plot"`.
+///
+/// ```rust
+/// use egui_citizen::CitizenId;
+///
+/// let id = CitizenId::new("freq_watt");
+/// assert_eq!(id.to_string(), "freq_watt");
+/// ```
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct CitizenId(pub String);
 

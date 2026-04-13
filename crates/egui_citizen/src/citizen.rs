@@ -1,52 +1,63 @@
-//! The core Citizen trait.
+//! The Citizen trait — persistent identity and lifecycle for dock panels.
 
 use crate::message::CitizenId;
 use crate::state::CitizenState;
 
-/// A UI element with persistent identity and lifecycle state.
+/// A dock panel with persistent identity and lifecycle state.
 ///
-/// Any widget, panel, or dockable that needs to track its own
-/// lifecycle across frames implements `Citizen`. The registry
-/// uses this trait to manage state and dispatch messages.
+/// Implement this on each panel struct to give it a name, reactive state,
+/// and lifecycle hooks. The [`Dispatcher`](crate::Dispatcher) manages
+/// activation and message dispatch across all citizens.
 ///
-/// # Example
+/// # Minimal implementation
 ///
-/// ```ignore
-/// struct FreqWattTab {
+/// ```rust,ignore
+/// use egui_citizen::{Citizen, CitizenId, CitizenState};
+///
+/// struct PlotPanel {
 ///     citizen_id: CitizenId,
 ///     citizen_state: CitizenState,
 /// }
 ///
-/// impl Citizen for FreqWattTab {
+/// impl PlotPanel {
+///     fn new(state: CitizenState) -> Self {
+///         Self { citizen_id: CitizenId::new("plot"), citizen_state: state }
+///     }
+/// }
+///
+/// impl Citizen for PlotPanel {
 ///     fn id(&self) -> &CitizenId { &self.citizen_id }
 ///     fn state(&self) -> &CitizenState { &self.citizen_state }
 ///     fn state_mut(&mut self) -> &mut CitizenState { &mut self.citizen_state }
 /// }
 /// ```
+///
+/// # Lifecycle hooks
+///
+/// Override `on_activate()`, `on_deactivate()`, or `on_click()` to run
+/// custom logic when the citizen's state changes. The defaults just update
+/// the reactive `CitizenState` fields.
 pub trait Citizen {
-    /// Unique identifier for this citizen.
+    /// This citizen's unique identifier.
     fn id(&self) -> &CitizenId;
 
-    /// Immutable access to lifecycle state.
+    /// Read-only access to lifecycle state.
     fn state(&self) -> &CitizenState;
 
     /// Mutable access to lifecycle state.
     fn state_mut(&mut self) -> &mut CitizenState;
 
-    /// Called when this citizen becomes active in its group.
-    /// Default implementation sets `state.active` to true.
+    /// Called when this citizen becomes the active one.
     fn on_activate(&mut self) {
         self.state_mut().active.set(true);
     }
 
     /// Called when this citizen is deactivated.
-    /// Default implementation sets `state.active` to false.
     fn on_deactivate(&mut self) {
         self.state_mut().active.set(false);
     }
 
     /// Called when this citizen is clicked.
-    /// Default implementation sets `state.clicked` to true for one frame.
     fn on_click(&mut self) {
         self.state_mut().clicked.set(true);
     }
