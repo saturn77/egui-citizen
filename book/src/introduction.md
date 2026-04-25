@@ -35,6 +35,11 @@ in the egui world that the **Qt Advanced Docking System** plays in Qt:
 without it an app tends to feel like a demo, and with it an app can
 feel professional.
 
+![A typical multi-panel egui_citizen / egui_dock app: top and bottom ribbons frame a 2×2 dock layout — Project / Settings (top-left), Plotter 1 / Plotter 2 (top-right), Logger (bottom-left), and Terminal / Shell (bottom-right).](images/Basic_App.drawio.png)
+
+*A typical multi-panel app layout. Every labelled region is a
+candidate citizen-panel; the ribbons are app-shared chrome.*
+
 But `egui_dock` is, by intent, a layout and interaction primitive — not
 an organizational framework. It hands you the shell. It does not tell
 you how the panels living inside that shell should share state,
