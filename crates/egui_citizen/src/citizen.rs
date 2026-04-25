@@ -27,8 +27,8 @@ use crate::state::CitizenState;
 ///
 /// impl Citizen for PlotPanel {
 ///     fn id(&self) -> &CitizenId { &self.citizen_id }
-///     fn state(&self) -> &CitizenState { &self.citizen_state }
-///     fn state_mut(&mut self) -> &mut CitizenState { &mut self.citizen_state }
+///     fn citizen_state(&self) -> &CitizenState { &self.citizen_state }
+///     fn citizen_state_mut(&mut self) -> &mut CitizenState { &mut self.citizen_state }
 /// }
 /// ```
 ///
@@ -42,33 +42,33 @@ pub trait Citizen {
     fn id(&self) -> &CitizenId;
 
     /// Read-only access to lifecycle state.
-    fn state(&self) -> &CitizenState;
+    fn citizen_state(&self) -> &CitizenState;
 
     /// Mutable access to lifecycle state.
-    fn state_mut(&mut self) -> &mut CitizenState;
+    fn citizen_state_mut(&mut self) -> &mut CitizenState;
 
     /// Called when this citizen becomes the active one.
     fn on_activate(&mut self) {
-        self.state_mut().active.set(true);
+        self.citizen_state_mut().active.set(true);
     }
 
     /// Called when this citizen is deactivated.
     fn on_deactivate(&mut self) {
-        self.state_mut().active.set(false);
+        self.citizen_state_mut().active.set(false);
     }
 
     /// Called when this citizen is clicked.
     fn on_click(&mut self) {
-        self.state_mut().clicked.set(true);
+        self.citizen_state_mut().clicked.set(true);
     }
 
     /// Whether this citizen is currently active.
     fn is_active(&self) -> bool {
-        self.state().active.get()
+        self.citizen_state().active.get()
     }
 
     /// Whether this citizen is currently selected.
     fn is_selected(&self) -> bool {
-        self.state().selected.get()
+        self.citizen_state().selected.get()
     }
 }
