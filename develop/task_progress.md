@@ -50,3 +50,38 @@
   `Dynamic::on_change`. Cross-linked from the introduction's
   "Observing changes" subsection and from `coupling.md`'s Path B
   aside.
+
+## 2026-04-25 (continued) — Remaining first-cut chapters + Pages CI
+
+- Filled six stub chapters to content-complete: `concepts/problem`,
+  `concepts/citizen`, `concepts/dispatcher`, `concepts/messages`,
+  `patterns/stored-vs-stateless`, `pitfalls`.
+- Wrote `book/src/reference.md` as a full single-page cheat sheet
+  (Dispatcher table, Citizen trait table, CitizenState fields,
+  CitizenMessage variants, CitizenId, common idioms).
+- `problem.md` framing crystallized in a 2026-04-13 Discord exchange
+  with Adanos020 (egui_dock maintainer): the
+  on_tab_button-name-obscures-role observation. Translated into
+  book voice; the verbatim Discord excerpt deliberately not quoted
+  in the published doc.
+- Added `Basic_App_State.drawio` diagram to
+  `concepts/dispatcher.md` — every panel's `CitizenState` arrow
+  points at the central dispatcher block (registration topology).
+- Updated `concepts/messages.md` "Wrapping in your own AppMessage"
+  section with a CopperForge-shaped 12-variant example,
+  intent-vs-outcome framing (`DrcRunRequested` →
+  `DrcCompleted`), section-divider-via-comments pattern, and
+  sub-domain nesting (`HotkeyPressed(Hotkey)`).
+- Added `.github/workflows/book.yml` — mdBook build to GitHub Pages
+  on push to `master`, manual `workflow_dispatch` enabled. Requires
+  Pages to be enabled in repo settings (Source: GitHub Actions)
+  before first deploy. Target URL is
+  `https://saturn77.github.io/egui-citizen/`.
+- Added README book link: `[![Book]…]` badge in the header row plus
+  a prominent blockquote callout linking to
+  `book/src/introduction.md`. Works on GitHub today via the markdown
+  renderer; repointable at the github.io URL once Pages deploys.
+- **Status:** 13/13 first-cut chapters drafted (three tutorial
+  chapters intentionally remain as stubs — `examples/` covers the
+  hands-on path; tutorials can lag the conceptual material without
+  blocking a soft launch).

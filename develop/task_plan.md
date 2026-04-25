@@ -28,25 +28,33 @@ chapters are drafted; rest are stubs awaiting prose.
       cost, no-unsubscribe and no-coalescing implications)
 - [x] `patterns/state-shape.md` — content-complete (three-struct model
       with PanelState convention)
-- [ ] `concepts/problem.md` — stub
-- [ ] `concepts/citizen.md` — stub
-- [ ] `concepts/dispatcher.md` — stub
-- [ ] `concepts/messages.md` — stub
+- [x] `concepts/problem.md` — content-complete (per-frame ui() vs
+      one-shot on_tab_button distinction; on_tab_button-name-obscures-
+      role discoverability framing from 2026-04-13 Adanos020 exchange)
+- [x] `concepts/citizen.md` — content-complete (trait surface,
+      minimum-viable impl, CitizenId-as-const guidance)
+- [x] `concepts/dispatcher.md` — content-complete (three jobs,
+      eight-method API, one-dispatcher-per-app rule, registration
+      topology diagram from Basic_App_State.drawio)
+- [x] `concepts/messages.md` — content-complete (six variants,
+      CopperForge-shaped AppMessage example, intent-vs-outcome,
+      sub-domain nesting)
 - [ ] `tutorial/first-citizen.md` — stub (adapt examples/getting_started)
 - [ ] `tutorial/with-egui-dock.md` — stub (adapt examples/citizen_dock)
 - [ ] `tutorial/two-panels.md` — stub (needs new example
       `examples/two_panels_reactive`)
-- [ ] `patterns/stored-vs-stateless.md` — stub (highest-value chapter
-      after concepts; drives from CopperForge's tabs.rs split)
-- [ ] `pitfalls.md` — stub (six gotchas already enumerated, need code
-      snippets per item)
-- [ ] `reference.md` — stub (cheat sheet only; rustdoc is the full ref)
-- [ ] CI: GitHub Pages deploy via `mdbook build`
+- [x] `patterns/stored-vs-stateless.md` — content-complete (both
+      lawful forms with code, the CitizenState::default() trap, the
+      CopperForge stored-vs-stateless split, decision rule)
+- [x] `pitfalls.md` — content-complete (six items each with broken
+      snippet + what-goes-wrong + fix)
+- [x] `reference.md` — content-complete (single-page cheat sheet)
+- [x] CI: GitHub Pages deploy via `mdbook build`
+      (.github/workflows/book.yml; requires Pages to be enabled in
+      repo settings before first deploy)
 - [ ] Decide later whether to wire `mdbook test` against the live
       crate (would require `[dev-dependencies]` and converting many
       `rust,ignore` blocks to runnable)
-
-## Phase 2: Serial Plotter Example
 
 ## Phase 2: Serial Plotter Example
 - [ ] Serial plotter with citizen-based dock layout:

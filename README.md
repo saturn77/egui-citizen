@@ -8,8 +8,18 @@ Structuring egui applications with dockable panels as first class Citizens.
 [![egui_dock](https://img.shields.io/badge/egui__dock-0.18-purple)](https://github.com/Adanos020/egui_dock)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
 ![Rust 2024](https://img.shields.io/badge/rust-2024-blue.svg)
+[![Book](https://img.shields.io/badge/📖_book-egui--citizen-orange)](book/src/introduction.md)
 
 </div>
+
+> **📖 [Read the egui-citizen Book](book/src/introduction.md)** — a
+> concept-by-concept guide to building organized egui apps. Covers
+> reactive lifecycle, the dispatcher, `Dynamic<T>` internals, coupling
+> paths, dual-wired atoms, stored vs stateless panels, common
+> pitfalls, and an API reference. Browses cleanly on GitHub today;
+> a deployed `mdbook` version is wired up at
+> `.github/workflows/book.yml` and will publish to GitHub Pages once
+> Pages is enabled in the repository settings.
 
 ## Introduction
 
