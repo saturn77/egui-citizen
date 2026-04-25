@@ -2,7 +2,7 @@
 
 # egui-citizen
 
-Structuring egui applications with dockable panels as first class Citizens. 
+A framework for organizing professional egui apps — persistent panel identity, reactive lifecycle state, and central message dispatch.
 
 [![egui](https://img.shields.io/badge/egui-0.33-blue)](https://github.com/emilk/egui)
 [![egui_dock](https://img.shields.io/badge/egui__dock-0.18-purple)](https://github.com/Adanos020/egui_dock)
@@ -20,7 +20,7 @@ Structuring egui applications with dockable panels as first class Citizens.
 
 ## Introduction
 
-Overall how does one structure an egui application that is flexible and easy to maintain with dockable panels? This is an essential question that really rquires consideration of the whole entire gui application. 
+Overall how does one structure an egui application that is flexible and easy to maintain with dockable panels? This is an essential question that really requires consideration of the whole entire gui application. 
 
 **egui_mobius** attempted to setup a framework for messaging
 and reactive updates, borrowing some ideas that have been
@@ -59,7 +59,7 @@ for msg in dispatcher.drain_messages() {
 | Type | Purpose |
 |------|---------|
 | `Citizen` | Trait each dock panel implements. Identity + lifecycle hooks. |
-| `CitizenState` | Per-panel reactive state: active, clicked, selected, moved, visible. |
+| `CitizenState` | Per-panel reactive state: active, clicked, selected, moved, location, visible. |
 | `CitizenMessage` | Lifecycle events dispatched through the message queue. |
 | `Dispatcher` | Manages citizens. `activate()` is an encoded set/reset. `drain_messages()` for Elm-style dispatch. |
 | `CitizenId` | String identifier. Panels are addressed by name. |
@@ -68,15 +68,15 @@ for msg in dispatcher.drain_messages() {
 
 Every field in `CitizenState` is a `Dynamic<T>` from [egui_mobius_reactive](https://github.com/saturn77/egui_mobius). When the Dispatcher calls `state.active.set(true)`, any panel holding a clone of that state sees the change immediately via `.get()` — no polling, no message checking, no frame delay. This is what makes two consumer paths possible:
 
-1. **Other panels** — read `CitizenState` directly via `Dynamic<T>`. Reactive, immediate, zero wiring.
+- **Path A — Other panels** read `CitizenState` directly via `Dynamic<T>`. Reactive, immediate, zero wiring.
 
-2. **Backend threads** — receive `CitizenMessage` via `drain_messages()` and route through channels to serial ports, network connections, or compute tasks.
+- **Path B — Backend threads** receive `CitizenMessage` via `drain_messages()` and route through channels to serial ports, network connections, or compute tasks.
 
 ```
 Tab click → dispatcher.activate("alpha")
-  ├─ Path 1: alpha.state.active = true   (reactive, immediate via Dynamic<T>)
+  ├─ Path A: alpha.state.active = true   (reactive, immediate via Dynamic<T>)
   │           beta.state.active = false
-  └─ Path 2: queue ← [Activated{alpha}, Deactivated{beta}]
+  └─ Path B: queue ← [Activated{alpha}, Deactivated{beta}]
              drain_messages() → route to backends
 ```
 
@@ -135,7 +135,7 @@ cargo run -p citizen_fetch
 
 ## Getting Started
 
-See [docs/getting-started.md](docs/getting-started.md) for a step-by-step guide.
+See the [egui-citizen book](https://saturn77.github.io/egui-citizen/) — concept-by-concept guide, common pitfalls, and an API reference cheat sheet.
 
 ## Dependencies
 
