@@ -4,10 +4,49 @@
 - [x] Core crate: Citizen trait, CitizenState, CitizenMessage, CitizenRegistry
 - [x] Basic example: citizen_dock (three algo tabs + reactive plot + logger)
 - [x] Standalone workspace repo with crates/ and examples/ structure
+- [x] Citizen trait rename: `state()` → `citizen_state()` (book-driven,
+      makes room for parallel `panel_state()` if PanelState becomes
+      first-class)
 - [ ] Decide: keep egui_mobius_reactive dependency or reimplement Dynamic<T> natively
 - [ ] Root README — dense, emphasizing panels, threading, message coordination, dispatcher, real-world use
 - [ ] LICENSE file
 - [ ] Git init + initial commit
+
+## Phase 1.5: Book (mdBook, in progress)
+Plan in `develop/book-plan.md`. Scaffold and the highest-value
+chapters are drafted; rest are stubs awaiting prose.
+
+- [x] mdBook scaffold: `book/book.toml`, `book/src/SUMMARY.md`,
+      `book/.gitignore`, all chapter files created
+- [x] `introduction.md` — content-complete (framework framing, egui_dock
+      / Qt ADS parallel, vocabulary, full Dynamic<T> deep dive)
+- [x] `concepts/state.md` — content-complete (reactive lifecycle)
+- [x] `concepts/coupling.md` — content-complete (two coupling paths,
+      dual-wired atoms, source-of-truth discipline)
+- [x] `concepts/inside-dynamic.md` — content-complete (Dynamic<T>
+      notifier subsystem internals, set/on_change mechanics, OS-thread
+      cost, no-unsubscribe and no-coalescing implications)
+- [x] `patterns/state-shape.md` — content-complete (three-struct model
+      with PanelState convention)
+- [ ] `concepts/problem.md` — stub
+- [ ] `concepts/citizen.md` — stub
+- [ ] `concepts/dispatcher.md` — stub
+- [ ] `concepts/messages.md` — stub
+- [ ] `tutorial/first-citizen.md` — stub (adapt examples/getting_started)
+- [ ] `tutorial/with-egui-dock.md` — stub (adapt examples/citizen_dock)
+- [ ] `tutorial/two-panels.md` — stub (needs new example
+      `examples/two_panels_reactive`)
+- [ ] `patterns/stored-vs-stateless.md` — stub (highest-value chapter
+      after concepts; drives from CopperForge's tabs.rs split)
+- [ ] `pitfalls.md` — stub (six gotchas already enumerated, need code
+      snippets per item)
+- [ ] `reference.md` — stub (cheat sheet only; rustdoc is the full ref)
+- [ ] CI: GitHub Pages deploy via `mdbook build`
+- [ ] Decide later whether to wire `mdbook test` against the live
+      crate (would require `[dev-dependencies]` and converting many
+      `rust,ignore` blocks to runnable)
+
+## Phase 2: Serial Plotter Example
 
 ## Phase 2: Serial Plotter Example
 - [ ] Serial plotter with citizen-based dock layout:
